@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sparq — Quick Messaging for iOS and watchOS</title>
+  <meta name="description" content="Sparq is a SwiftUI app for quick messaging on iOS and watchOS." />
+  <link rel="icon" href="favicon.ico" />
+  <style>
+    :root {
+      --bg: #0f1116;
+      --bg-soft: #151823;
+      --panel: #0f1220;
+      --text: #e6eaf2;
+      --muted: #a7b1c2;
+      --accent: #7aa2ff;
+      --accent-2: #58d3ff;
+      --border: #1f2433;
+      --card: #111526;
+      --link: #8bb4ff;
+      --shadow: 0 8px 24px rgba(0,0,0,0.35);
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 20% -10%, #1a1f33 0%, transparent 60%),
+                  radial-gradient(900px 600px at 120% 20%, #0f1a2e 0%, transparent 50%),
+                  var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Header */
+    .nav {
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: saturate(140%) blur(16px);
+      background: linear-gradient(180deg, rgba(15,18,32,0.85), rgba(15,18,32,0.55));
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1120px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 14px 20px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+    .brand-logo {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 8px 18px rgba(122,162,255,0.35);
+    }
+    .brand-name { font-weight: 700; letter-spacing: 0.2px; }
+
+    .nav-links { display: flex; gap: 16px; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-weight: 600; font-size: 14px;
+      padding: 8px 10px; border-radius: 10px;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(138, 160, 255, 0.08); }
+
+    /* Hero */
+    .hero {
+      max-width: 1120px; margin: 42px auto 0;
+      padding: 28px 20px 0;
+    }
+    .headline {
+      display: grid; grid-template-columns: 1fr; gap: 18px;
+      align-items: center; justify-content: space-between;
+    }
+    .title {
+      font-size: clamp(30px, 4.6vw, 52px);
+      line-height: 1.1; letter-spacing: -0.5px; margin: 0;
+      background: linear-gradient(180deg, #fff, #bcd1ff);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .subtitle {
+      margin: 2px 0 0; color: var(--muted); font-size: 16px; max-width: 64ch;
+    }
+    .actions { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+    .btn {
+      text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.3px;
+      padding: 11px 16px; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--border); color: var(--text); background: linear-gradient(180deg, #171b2b, #0f1220);
+      box-shadow: var(--shadow);
+    }
+    .btn:hover { border-color: #2b3550; transform: translateY(-1px); transition: transform 120ms ease; }
+    .btn.primary { background: linear-gradient(180deg, #3f6cff, #2b54e8); border-color: #2d50c9; }
+    .btn.primary:hover { background: linear-gradient(180deg, #4673ff, #2f59f0); }
+
+    /* Feature cards */
+    .section {
+      max-width: 1120px; margin: 36px auto; padding: 0 20px;
+    }
+    .section h2 {
+      font-size: 22px; letter-spacing: 0.2px; margin: 0 0 14px;
+    }
+    .grid {
+      display: grid; gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .card {
+      background: linear-gradient(180deg, var(--card), #0f1220);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px; box-shadow: var(--shadow);
+    }
+    .card h3 { margin: 0 0 8px; font-size: 16px; }
+    .card p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    /* Support + footer */
+    .support {
+      display: grid; gap: 14px; grid-template-columns: 1fr 1fr; align-items: start;
+    }
+    .support .panel {
+      background: linear-gradient(180deg, var(--bg-soft), #0f1220);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px; box-shadow: var(--shadow);
+    }
+    .support a { color: var(--link); text-decoration: none; }
+    .support a:hover { text-decoration: underline; }
+
+    .footer {
+      max-width: 1120px; margin: 24px auto 36px; padding: 0 20px;
+      color: var(--muted); font-size: 13px;
+      display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+      border-top: 1px solid var(--border); padding-top: 16px;
+    }
+    .legal a { color: var(--muted); text-decoration: none; }
+    .legal a:hover { color: var(--text); }
+
+    @media (max-width: 720px) {
+      .support { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav" role="banner">
+    <div class="nav-inner">
+      <a class="brand" href="./">
+        <div class="brand-logo" aria-hidden="true"></div>
+        <div class="brand-name">Sparq</div>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#platforms">Platforms</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#support">Support</a>
+        <a href="./help/">Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <div class="headline">
+        <div>
+          <h1 id="title" class="title">Quick messaging for iOS and watchOS</h1>
+          <p class="subtitle">Sparq makes short, frequent communication effortless with a SwiftUI experience tuned for speed, glanceability, and on-wrist replies.</p>
+          <div class="actions">
+            <!-- Replace with actual App Store badge/link when available -->
+            <a class="btn primary" href="#" aria-disabled="true">Get on the App Store</a>
+            <a class="btn" href="./help/">Read the Help Guide</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section" aria-labelledby="features-h">
+      <h2 id="features-h">Features</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>SwiftUI-first</h3>
+          <p>Built with SwiftUI for responsive layouts, smooth transitions, and native accessibility across Apple platforms.</p>
+        </article>
+        <article class="card">
+          <h3>Quick compose</h3>
+          <p>Send short messages with minimal taps, optimized for one-handed, on-the-go use.</p>
+        </article>
+        <article class="card">
+          <h3>On-wrist messaging</h3>
+          <p>Compose and reply from Apple Watch with glanceable UI and lightweight interactions.</p>
+        </article>
+        <article class="card">
+          <h3>Privacy-first</h3>
+          <p>No unnecessary data collection. Clear controls and a transparent privacy policy.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="platforms" class="section" aria-labelledby="platforms-h">
+      <h2 id="platforms-h">Platforms</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>iOS</h3>
+          <p>Optimized for iPhone with fast launch, haptics, and system integrations for sharing and notifications.</p>
+        </article>
+        <article class="card">
+          <h3>watchOS</h3>
+          <p>Reply and compose from watchOS with compact controls tailored to the smallest screen.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="privacy" class="section" aria-labelledby="privacy-h">
+      <h2 id="privacy-h">Privacy</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Data collection</h3>
+          <p>Sparq collects no personal data beyond what is strictly required for functionality. See the privacy policy for details.</p>
+        </article>
+        <article class="card">
+          <h3>Permissions</h3>
+          <p>Only essential permissions are requested
